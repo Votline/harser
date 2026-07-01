@@ -55,12 +55,11 @@ func AddExp(query *url.Values, exp []byte) {
 		}
 		src := exp[start:end]
 		srcStr := unsafe.String(unsafe.SliceData(src), len(src))
-		query.Set("experience", srcStr)
+		query.Add("experience", srcStr)
 	})
 }
 
 // AddSchedule add values from 'Schedule' field
-// to query string
 func AddSchedule(query *string, schedule []byte) {
 	trimSpaceBytes(&schedule)
 	scheduleStr := unsafe.String(unsafe.SliceData(schedule), len(schedule))
