@@ -1,0 +1,7 @@
+[cfg]
+FindTitle:go,golang,backend,developer,разработчик
+IgnoreTitle:python,ruby,php,laravel,c++,c,с++,с,rust
+FindDesc:
+IgnoreDesc:ruby,php,laravel,rust,c,c++,с,с++
+SalaryRange:80000,190000
+[\cfg]
