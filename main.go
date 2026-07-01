@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"net/http"
 	"os"
+	"unsafe"
 
 	"github.com/Votline/Gurlf"
 )
@@ -16,13 +19,24 @@ type Config struct {
 }
 
 func main() {
+	const op = "main.main"
+
 	cfgPath := os.Args[1]
 	cfg, err := parseCfg(cfgPath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "parse config: %v\n", err)
+		fmt.Fprintf(os.Stderr, "%s: parse config: %s\n", op, err.Error())
 		return
 	}
 	fmt.Println(cfg)
+
+	req, err := http.NewRequest("GET", "https://api.hh.ru/vacancies", nil)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s: http new request: %s\n", op, err.Error())
+	}
+	queryStr := ""
+	addFindTitle(&queryStr, cfg.FindTitle)
+	q := req.URL.Query()
+	q.Add("text", queryStr)
 }
 
 // parseCfg parses config file
@@ -43,4 +57,44 @@ func parseCfg(path string) (*Config, error) {
 	}
 
 	return &cfg, nil
+}
+
+// rangeByByte call yield for each matching row
+func rangeByByte(src []byte, sep byte, yield func(start, end int)) {
+	start := 0
+	for start < len(src) {
+		end := bytes.IndexByte(src[start:], sep)
+		if end == -1 {
+			end = len(src)
+		} else {
+			end += start
+		}
+		yield(start, end)
+		start = end + 1
+	}
+}
+
+// addFindTitle add values from 'FindTitle' field
+// to query string
+func addFindTitle(query *string, find []byte) {
+	var buf bytes.Buffer
+	buf.Write([]byte("NAME:("))
+	rangeByByte(find, byte(','), func(start, end int) {
+		if start == end {
+			return
+		}
+		src := find[start:end]
+		buf.Write(src)
+		buf.Write([]byte(" OR "))
+	})
+	findBytes := buf.Bytes()
+
+	lastOrIdx := bytes.LastIndex(findBytes, []byte(" OR "))
+	if lastOrIdx != -1 {
+		findBytes = findBytes[:lastOrIdx]
+	}
+	findBytes = append(findBytes, ')')
+
+	findStr := unsafe.String(unsafe.SliceData(findBytes), len(findBytes))
+	*query = findStr
 }
