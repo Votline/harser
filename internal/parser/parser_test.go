@@ -1,10 +1,10 @@
-package main
+package parser
 
 import (
 	"testing"
 )
 
-func TestAddFindTitle(t *testing.T) {
+func TestAddTitle(t *testing.T) {
 	tests := []struct {
 		name string
 		find []byte
@@ -25,7 +25,7 @@ func TestAddFindTitle(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ""
-			addFindTitle(&got, tt.find)
+			AddTitle(&got, tt.find)
 
 			if got != tt.want {
 				t.Errorf("%s: got = %q, want %q", tt.name, got, tt.want)

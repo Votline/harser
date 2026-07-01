@@ -3,5 +3,7 @@ FindTitle:go,golang,backend,developer,разработчик
 IgnoreTitle:python,ruby,php,laravel,c++,c,с++,с,rust
 FindDesc:
 IgnoreDesc:ruby,php,laravel,rust,c,c++,с,с++
-SalaryRange:80000,190000
+Salary:80000
+ExpRange:noExp,between1And3
+Schedule:remote
 [\cfg]
